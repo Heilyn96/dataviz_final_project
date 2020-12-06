@@ -9,4 +9,76 @@ output:
 
 # Data Visualization Project 01
 
-_revised version of mini-project 01 goes here_
+I have selected the *U.S births for the years 2000 to 2014* dataset for doing this project. This dataset has 5,479 observations and the data is presented by six variables that are year, month, date of month, day of week of week and the number of births. I will analyze the data by the observation the month and day of week that it is trending mothers to give births and the years that has the most births in the U.S between years 2000 and 2014.
+
+```{r}
+library(tidyverse)
+birth <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/us_births_00_14.csv")
+```
+
+```{r}
+birth
+```
+
+# Total of births 
+
+In the United States the total of births for the years 2000 to 2014 was 62,187,024. For analyzing the data by day of week, I will follow the steps below:
+
+1. Summarize the data group by the weekday of birth. 
+2. Ordered the categorical data, in this case, the day of week. 
+3. Create a bar plot for showing the results. 
+
+
+```{r}
+number_births<-birth %>%
+    summarise(number_births=sum(births))
+
+number_births
+
+```
+
+-------------------------------------------------------------------
+
+## Number of births by weekday
+
+After getting the data by weekday, we have to organize that data because day of week is a categorical variable, and they must be ordered for representing then in a bar plot. 
+
+```{r}
+number_births_weekday<-birth%>%
+  group_by(day_of_week)%>%
+  summarise(number_births_weekday=sum(births))%>%
+  mutate(total=number_births_weekday)
+number_births_weekday
+  
+
+```
+
+
+## Getting the weekdays ordered
+
+```{r}
+number_births_weekday$day_of_week<-factor(number_births_weekday$day_of_week, 
+                                          levels = c("Sun", "Mon", "Tues", "Wed", "Thurs", "Fri", "Sat"))
+number_births_weekday<-number_births_weekday[order(
+  number_births_weekday$day_of_week),]
+
+```
+
+
+After having ordered the data, I proceeded to represent the data in a bar plot using geom_col() and see which day of the week is more common for mothers to give birth and which one is not.  
+
+
+## Barplot of number of births by weekday
+ 
+
+```{r}
+ggplot(data=number_births_weekday, mapping = aes(x=day_of_week,y=total, fill=day_of_week)) +
+  geom_col(position= "dodge") + theme_minimal() +
+  scale_fill_brewer(palette = "Set1") + 
+  guides(fill=FALSE) +  labs(x = "",y = "Births", title = "U.S birth data for the years 2000 to 2014", 
+                             subtitle = "Trends of Births by Weekday") + scale_color_brewer(palette = "Set2") +
+  scale_y_continuous(labels = scales::comma) 
+```
+
+
+As is shown in the bar plot, the day of the week that is trending for births is Tuesday, it has a total of births of  10,274,874. However, Sunday looks like it is not common to give birth that day, it has a total of births of 5,886,889. I think most of births occurs in a unintentional day because their delivery method is natural, as it is explain in the paper ["Annual Summary of Vital Statistics:2013–2014"](https://pediatrics.aappublications.org/content/pediatrics/139/6/e20163239.full.pdf). However,  if mothers have to deliver a baby by induction or c-section, for doctors and coming parents will not select a weekend day. Maybe, this is why Tuesday has the most number of births in the week. 
