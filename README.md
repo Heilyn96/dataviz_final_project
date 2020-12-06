@@ -24,7 +24,7 @@ Below is an scatterplot that shows how the number of births in the U.S tends to 
 
 In this project, I explored the number of bad drivers in U.S involved in fatal collisions. I pretend to visualize which State has the worst drivers in the country and if the number of accidents where drivers who were not distracted is considerable. If you are interested to know what are the major contributed factor in fatal accidents, you should take a look of my analysis. Find the code and report in the `project_02/` folder.
 
-
+Below is a visualization of what you can find in the folder:
 
 <img src="https://github.com/Heilyn96/dataviz_final_project/blob/main/figures/baddrivers.png" width="60%" height="60%">
 
