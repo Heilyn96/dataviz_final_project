@@ -38,7 +38,7 @@ This dataset contains the following variables:
 
 # Summarizing the data
 
-After getting the data, it is time to formatting the data because the columns "perc_speeding", "perc_alcohol", "perc_not_distracted" and so on, are percentages of "num_drivers (number of drivers involved in fatal accidents)". I will mutate some new columns in the following step:
+After getting the data, it is time to formatting the data because the columns "perc_speeding","perc_alcohol", "perc_not_distracted" and so on, are percentages of "num_drivers (number of drivers involved in fatal accidents)". I will mutate some new columns in the following step:
 
 
 
@@ -160,7 +160,8 @@ Let's see what happens with alcohol drivers that are involved in fatal collision
 
 plot1<-ggplot(data=bad_drivers, mapping = aes(x=alchol_drivers,y=insurance_premiums)) + 
   geom_point() + geom_smooth(method=lm)+ 
-  labs(title = "Insurance Premiun vs Alcohol Drivers", x = "Drivers under influence of Alcohol", y = "Insurance Premiums") +
+  labs(title = "Insurance Premiun vs Alcohol Drivers", 
+  x = "Drivers under influence of Alcohol", y = "Insurance Premiums") +
   theme(legend.title = element_blank(), legend.position = "none") + theme_minimal()
 
 plot1
@@ -192,8 +193,10 @@ library(sf)
 library(usmap)
 
 
-baddrivers_map<- plot_usmap(data = bad_drivers, values = "num_drivers", color = "red") + 
-  scale_fill_continuous(name = "Bad drivers in U.S", label = scales::comma) + 
+baddrivers_map<- plot_usmap(data = bad_drivers, 
+values = "num_drivers", color = "red") + 
+  scale_fill_continuous(name = "Bad drivers in U.S", 
+  label = scales::comma) + 
   theme(legend.position = "right")
 
 baddrivers_map
