@@ -169,7 +169,18 @@ Hint: use the`ggridges` package, and the `geom_density_ridges()` function paying
 
  I think the plot let us visualize which months are the coldest in Tampa. It looks like January was the coldest month and June the hottest month in 2016.   
 
-
+```{r}
+partE<- ggplot(data=weather_tpa, 
+               mapping = aes(x = max_temp, 
+                y = MonthAbb, fill = MonthAbb)) + 
+  geom_density_ridges() +
+  stat_density_ridges(quantile_lines = TRUE, quantiles = 0.5) + 
+  scale_fill_manual(values = viridis::viridis(n = 12)) +
+  theme_minimal() +
+  theme(legend.position = "None") + 
+  labs(x = "Maximum temperature", y = "")
+partE
+```
 
 
 (f) Recreate the chart below:
