@@ -21,7 +21,7 @@ Using the dataset obtained from FSU's [Florida Climate Center](https://climatece
 library(tidyverse)
 weather_tpa <- read_csv("https://github.com/reisanar/datasets/raw/master/tpa_weather_16_17.csv")
 # random sample 
-sample_n(weather_tpa, 4)
+sample_n(weather_tpa, 10)
 ```
 
 See https://www.reisanar.com/slides/relationships-models#10 for a reminder on how to use this dataset with the `lubridate` package for dates and times.
@@ -35,6 +35,59 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
 
+## Ordering months
+```{r}
+
+weather_tpa$month<-factor(weather_tpa$month, levels = c("1","2","3","4","5","6","7","8","9","10","11","12"))
+weather_tpa<-weather_tpa[order(weather_tpa$month),]
+
+mymonths <- c("January","February","March", "April",
+              "May","Jun", "July","August","September", 
+              "October","November","December")
+weather_tpa$MonthAbb <- mymonths[ weather_tpa$month ]
+
+weather_tpa$MonthAbb<-factor(weather_tpa$MonthAbb,
+                             levels = c("January","February","March", "April",
+              "May","Jun", "July","August","September", 
+              "October","November","December"))
+
+weather_tpa<-weather_tpa[order(weather_tpa$MonthAbb),]
+
+weather_tpa
+
+```
+## Cleaning the data
+```{r 1a}
+
+weather_tpa<-weather_tpa%>%
+  mutate(max_temp=as.double(max_temp),
+         min_temp=as.double(min_temp), 
+         precipitation=as.double(precipitation))%>%
+           arrange(month)
+weather_tpa
+
+```
+
+## Plotting the data
+
+```{r}
+library(viridis)
+partA<- ggplot(data= weather_tpa, 
+               mapping= aes(x = max_temp, fill = MonthAbb)) +
+  geom_histogram( binwidth = 3) + 
+  facet_wrap(~MonthAbb) + 
+  theme_bw() +
+  theme(legend.position = "None") + scale_fill_manual(values = viridis::viridis(n = 12))+
+  labs(x = "Maximum temperatures", y = "Number of Days")
+
+partA
+
+
+
+
+```
+
+
 (b) Recreate the plot below:
 
 ```{r, echo = FALSE, out.width="80%", fig.align='center'}
@@ -42,6 +95,22 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 ```
 
 Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
+
+
+```{r}
+partB<- ggplot(data= weather_tpa, 
+               mapping=aes( x= max_temp), 
+               fill = "gray") + 
+  geom_density(fill = 'gray', 
+               kernel = "epanechnikov", 
+               bw = 0.5) + 
+  theme_minimal() + 
+  labs(x = "Maximum temperature")
+
+partB
+```
+
+
 
 (c) Recreate the chart below:
 
@@ -51,6 +120,18 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: default options for `geom_density()` were used. 
 
+```{r}
+partC<- ggplot(data=weather_tpa, 
+               mapping=aes(x = max_temp, fill = MonthAbb)) +
+  geom_density(kernel = "triangular") + 
+  facet_wrap(~MonthAbb) + 
+  theme_bw() +
+  scale_fill_manual(values = viridis::viridis(n = 12)) +
+  theme(legend.position = "None") + 
+  labs(x = "Maximum temperature", y = "", title = "Density plots for each month in 2016")
+partC
+```
+
 (d) Recreate the chart below:
 
 ```{r, echo = FALSE, out.width="80%", fig.align='center'}
@@ -58,6 +139,23 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 ```
 
 Hint: default options for `geom_density()` were used. 
+
+```{r}
+library(ggridges)
+partD<- ggplot(data=weather_tpa, 
+               mapping = aes(x = max_temp, 
+                y = MonthAbb, fill = MonthAbb)) + 
+  geom_density_ridges() +
+  stat_density_ridges(quantile_lines = TRUE, quantiles = 0.5) + 
+  scale_fill_manual(values = viridis::viridis(n = 12)) +
+  theme_minimal() +
+  theme(legend.position = "None") + 
+  labs(x = "Maximum temperature", y = "")
+
+partD
+```
+
+
 
 (e) Recreate the plot below:
 
@@ -67,6 +165,13 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: use the`ggridges` package, and the `geom_density_ridges()` function paying close attention to the `quantile_lines` and `quantiles` parameters.
 
+## partE
+
+ I think the plot let us visualize which months are the coldest in Tampa. It looks like January was the coldest month and June the hottest month in 2016.   
+
+
+
+
 (f) Recreate the chart below:
 
 ```{r, echo = FALSE, out.width="80%", fig.align='center'}
@@ -75,6 +180,18 @@ knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_tem
 
 Hint: this uses the `plasma` option (color scale) for the _viridis_ palette.
 
+```{r}
+partF<- ggplot(data=weather_tpa, 
+               mapping = aes(x = max_temp, 
+                             y = MonthAbb, fill = stat(x))) + 
+  stat_density_ridges(geom = "density_ridges_gradient",
+                      quantile_lines = TRUE, quantiles = 0.5) +
+  scale_fill_viridis_c(name = "", option = "C") +
+  theme_minimal() +
+  labs(x = "Maximum Temperature (in Fahrenheit degrees)", y = "")
+
+partF
+```
 
 
 
