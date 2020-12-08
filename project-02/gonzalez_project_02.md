@@ -1,14 +1,8 @@
 ---
-title: "Mini-Project 02"
-output: 
-  html_document:
-    keep_md: true
-    toc: true
-    toc_float: true
+title: "Data Visualization - Mini-Project 2"
+author: "Heilyn Gonzalez `hramirezabreu8662@floridapoly.edu`"
+output: html_notebook
 ---
-
-# Data Visualization Project 02
-
 
 I have selected for this project the dataset about bad drivers in U.S. I pretend to visualize which State has the worst drivers in the country and if the number of accidents where drivers who were not distracted is considerable. I am not the best driver but I drive without exceeding the limit of speed, and I am always afraid of crashes because Floridian's drivers are really racing and that scares me a little bit. 
 
@@ -19,8 +13,9 @@ I have selected for this project the dataset about bad drivers in U.S. I pretend
 
 ```{r}
 library(tidyverse)
+library(htmlwidgets)
+library(ggplot2)
 bad_drivers<-read_csv ("https://raw.githubusercontent.com/reisanar/datasets/master/bad_drivers.csv")
-
 ```
 
 This dataset contains the following variables:
@@ -38,7 +33,7 @@ This dataset contains the following variables:
 
 # Summarizing the data
 
-After getting the data, it is time to formatting the data because the columns "perc_speeding","perc_alcohol", "perc_not_distracted" and so on, are percentages of "num_drivers (number of drivers involved in fatal accidents)". I will mutate some new columns in the following step:
+After getting the data, it is time to formatting the data because the columns "perc_speeding", "perc_alcohol", "perc_not_distracted" and so on, are percentages of "num_drivers (number of drivers involved in fatal accidents)". I will mutate some new columns in the following step:
 
 
 
@@ -48,7 +43,6 @@ bad_drivers<-bad_drivers%>%
   mutate(alchol_drivers=(num_drivers*perc_alcohol)/100)%>%
   mutate(notdistracted_drivers=(num_drivers*perc_not_distracted)/100)%>%
   mutate(noprevious_drivers=(num_drivers*perc_no_previous)/100)
-
 ```
 
 
@@ -64,20 +58,18 @@ Below will be a Treemap that will show us the number of bad drivers in U.S group
 ```{r}
 library(ggplot2)
 library(treemapify)
-
 treemap1<- ggplot(bad_drivers, aes(area = num_drivers, fill = state, label = paste(state, num_drivers, separate = " "))) + 
   geom_treemap(show.legend = FALSE) +
   geom_treemap_text(fontface = "italic", colour = "white", place = "topleft", grow = FALSE) +
   labs(title = "Number of Bad Drivers in U.S", subtitle = "Per State")
-
 treemap1
-
 ```
 
 I will create some barplots for analyzing the data and see what are the major percentage of drivers involved in fatal collisions, and which state has the most of them.
 
 
 ```{r}
+library(plotly)
 speedbarplot<-bad_drivers %>% 
   select(state, num_drivers, speeding_drivers) %>% 
   gather(type, value, num_drivers:speeding_drivers) %>% 
@@ -86,8 +78,7 @@ speedbarplot<-bad_drivers %>%
   scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
   ylab("") + theme_minimal() + theme_classic() + 
   theme(axis.text.x=element_text(angle=90, vjust=0.5)) 
-
-
+ggplotly()
 speedbarplot
 ```
 As we can see here, for speeding drivers involved in fatal collisions the State of South Dakota, Pennsylvania, West Virginia, Montana and Hawaii have the most speeding drivers involved in fatal accidents in the U.S. 
@@ -103,9 +94,8 @@ alcoholbarplot<-bad_drivers %>%
   scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
   ylab("") + theme_minimal() + theme_classic() + 
   theme(axis.text.x=element_text(angle=90, vjust=0.5))
-
+ggplotly()
 alcoholbarplot
-
 ```
 
 It is annoying how many people drive when they have been drinking, this plot shows that we need to create more conscience about the risk of driving under the influence of alcohol. North Dakota, South Carolina, Montana, West Virginia and Arkansas has the most number of bad drivers involved in fatal collisions in this condition. 
@@ -121,7 +111,7 @@ notdistractedbarplot<-bad_drivers %>%
   scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
   ylab("") + theme_minimal() + theme_classic() + 
   theme(axis.text.x=element_text(angle=90, vjust=0.5))
-
+ggplotly()
 notdistractedbarplot
 ```
 Here the State of West Virginia, Montana, South Carolina, North Dakota and Arkanzas has the most number of fatal collision were not distracted drivers were involved. So, the chance of being involved in a fatal collision when you are not distracted are minimum comparing that with being speeding or alcohol-impared. Now, let's see what happens with people that haven't been involved in fatal collisions before.
@@ -140,11 +130,8 @@ nopreviousbarplot<-bad_drivers %>%
   scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
   ylab("") + theme_minimal() + theme_classic() + 
   theme(axis.text.x=element_text(angle=90, vjust=0.5)) 
-
-
+ggplotly()
 nopreviousbarplot
-
-
 ```
 
 
@@ -159,17 +146,16 @@ Let's see what happens with alcohol drivers that are involved in fatal collision
 ```{r}
 
 plot1<-ggplot(data=bad_drivers, mapping = aes(x=alchol_drivers,y=insurance_premiums)) + 
-  geom_point() + geom_smooth(method=lm)+ 
-  labs(title = "Insurance Premiun vs Alcohol Drivers", 
-  x = "Drivers under influence of Alcohol", y = "Insurance Premiums") +
+  geom_point() + geom_smooth(method="lm")+ 
+    labs(title = "Insurance Premiun vs Alcohol Drivers",
+       x = "Drivers under influence of Alcohol",
+       y = "Insurance Premiums")+
+    scale_y_continuous(labels = scales::comma)+
   theme(legend.title = element_blank(), legend.position = "none") + theme_minimal()
+ggplotly()
+
 
 plot1
-
-plot2<- plot1 + geom_label_repel(aes(label = state))
-plot2
-
-
 
 ```
 
@@ -191,19 +177,14 @@ library(plotly)
 library(ggrepel)
 library(sf)
 library(usmap)
-
-
-baddrivers_map<- plot_usmap(data = bad_drivers, 
-values = "num_drivers", color = "red") + 
-  scale_fill_continuous(name = "Bad drivers in U.S", 
-  label = scales::comma) + 
+baddrivers_map<- plot_usmap(data = bad_drivers, values = "num_drivers", color="red") + 
+  scale_color_continuous(name = "Bad drivers in U.S", label = scales::comma) + 
   theme(legend.position = "right")
-
 baddrivers_map
 
-
-
 ```
+
+
 
 
 
