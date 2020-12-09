@@ -33,14 +33,14 @@ Below is a visualization of what you can find in the folder:
 
 ## Project 03
 
-In this project, I explored ... _[short description of your revised project goes here]_
+In this project, I explored the weather of Tampa in 2016 year. It was a good way to use all of the concepts and knowledge learn in this course in one project.
+I have explored the weather_tpa dataset, it contains the max and min temperature in 2016. The plots show which months are the coldest and hottest in this city back in 2016. My favorite visualization is below:
 
-**Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://github.com/reisanar/figs/raw/master/jackie_jessie_marion.png" width="80%" height="80%">
+
+<img src="https://github.com/Heilyn96/dataviz_final_project/blob/main/figures/project3.1.png" width="80%" height="80%">
 
 
 ### Moving Forward
 
-_add here a short reflection on what you learned and what you plan to continue exploring in terms of data visualization, data storytelling, reproducible research, and/or related topics_
+_In this course, I have learn the importance of visualize data in a way that I present what I want the audience to know about the data. Also, I learn how to use so many packages in R and how to work with GitHub. I want to still learning about interactive plots, I want to create an interactive paper in the future_
