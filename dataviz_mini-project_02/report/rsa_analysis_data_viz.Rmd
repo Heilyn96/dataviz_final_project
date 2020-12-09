@@ -1,0 +1,205 @@
+---
+title: "Data Visualization - Mini-Project 2"
+author: "Heilyn Gonzalez `hramirezabreu8662@floridapoly.edu`"
+output: html_notebook
+---
+
+I have selected for this project the dataset about bad drivers in U.S. I pretend to visualize which State has the worst drivers in the country and if the number of accidents where drivers who were not distracted is considerable. I am not the best driver but I drive without exceeding the limit of speed, and I am always afraid of crashes because Floridian's drivers are really racing and that scares me a little bit. 
+
+
+## Getting the data
+
+
+
+```{r}
+library(tidyverse)
+bad_drivers<-read_csv ("https://raw.githubusercontent.com/reisanar/datasets/master/bad_drivers.csv")
+
+```
+
+This dataset contains the following variables:
+
+* State
+* Number of drivers involved in fatal collisions per billion miles
+* Percentage of drivers involved in fatal collisions who were speeding
+* Percentage of drivers involved in fatal collisions who were alcohol-impaired
+* Percentage of drivers involved in fatal collisions who were not distracted
+* Percentage of drivers involved in fatal collisions who had not been involved in any previous accidents
+* Car insurance premiums
+* Losses incurred by insurance companies for collisions per insured driver
+
+
+
+# Summarizing the data
+
+After getting the data, it is time to formatting the data because the columns "perc_speeding", "perc_alcohol", "perc_not_distracted" and so on, are percentages of "num_drivers (number of drivers involved in fatal accidents)". I will mutate some new columns in the following step:
+
+
+
+```{r}
+bad_drivers<-bad_drivers%>%
+  mutate(speeding_drivers=(num_drivers*perc_speeding)/100)%>%
+  mutate(alchol_drivers=(num_drivers*perc_alcohol)/100)%>%
+  mutate(notdistracted_drivers=(num_drivers*perc_not_distracted)/100)%>%
+  mutate(noprevious_drivers=(num_drivers*perc_no_previous)/100)
+
+```
+
+
+
+
+
+# Plotting the data
+
+Below will be a Treemap that will show us the number of bad drivers in U.S grouping by State.
+
+
+
+```{r}
+library(ggplot2)
+library(treemapify)
+
+treemap1<- ggplot(bad_drivers, aes(area = num_drivers, fill = state, label = paste(state, num_drivers, separate = " "))) + 
+  geom_treemap(show.legend = FALSE) +
+  geom_treemap_text(fontface = "italic", colour = "white", place = "topleft", grow = FALSE) +
+  labs(title = "Number of Bad Drivers in U.S", subtitle = "Per State")
+
+treemap1
+
+```
+
+I will create some barplots for analyzing the data and see what are the major percentage of drivers involved in fatal collisions, and which state has the most of them.
+
+
+```{r}
+speedbarplot<-bad_drivers %>% 
+  select(state, num_drivers, speeding_drivers) %>% 
+  gather(type, value, num_drivers:speeding_drivers) %>% 
+  ggplot(., aes(x = state,y = value, fill = type)) + labs(fill="Type") +
+  geom_bar(position = "stack", stat="identity") + 
+  scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
+  ylab("") + theme_minimal() + theme_classic() + 
+  theme(axis.text.x=element_text(angle=90, vjust=0.5)) 
+
+
+speedbarplot
+```
+As we can see here, for speeding drivers involved in fatal collisions the State of South Dakota, Pennsylvania, West Virginia, Montana and Hawaii have the most speeding drivers involved in fatal accidents in the U.S. 
+
+
+
+```{r}
+alcoholbarplot<-bad_drivers %>% 
+  select(state, num_drivers, alchol_drivers) %>% 
+  gather(type, value, num_drivers:alchol_drivers) %>% 
+  ggplot(., aes(x = state,y = value, fill = type)) + labs(fill="Type") +
+  geom_bar(position = "stack", stat="identity") + 
+  scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
+  ylab("") + theme_minimal() + theme_classic() + 
+  theme(axis.text.x=element_text(angle=90, vjust=0.5))
+
+alcoholbarplot
+
+```
+
+It is annoying how many people drive when they have been drinking, this plot shows that we need to create more conscience about the risk of driving under the influence of alcohol. North Dakota, South Carolina, Montana, West Virginia and Arkansas has the most number of bad drivers involved in fatal collisions in this condition. 
+
+
+
+```{r}
+notdistractedbarplot<-bad_drivers %>% 
+  select(state, num_drivers, notdistracted_drivers) %>% 
+  gather(type, value, num_drivers:notdistracted_drivers) %>% 
+  ggplot(., aes(x = state,y = value, fill = type)) + labs(fill="Type") +
+  geom_bar(position = "stack", stat="identity") + 
+  scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
+  ylab("") + theme_minimal() + theme_classic() + 
+  theme(axis.text.x=element_text(angle=90, vjust=0.5))
+
+notdistractedbarplot
+```
+Here the State of West Virginia, Montana, South Carolina, North Dakota and Arkanzas has the most number of fatal collision were not distracted drivers were involved. So, the chance of being involved in a fatal collision when you are not distracted are minimum comparing that with being speeding or alcohol-impared. Now, let's see what happens with people that haven't been involved in fatal collisions before.
+
+
+
+
+
+
+```{r}
+nopreviousbarplot<-bad_drivers %>% 
+  select(state, num_drivers, noprevious_drivers) %>% 
+  gather(type, value, num_drivers:noprevious_drivers) %>% 
+  ggplot(., aes(x = state,y = value, fill = type)) + labs(fill="Type") +
+  geom_bar(position = "stack", stat="identity") + 
+  scale_fill_manual(values = c("green", "darkgreen")) + xlab("States") +
+  ylab("") + theme_minimal() + theme_classic() + 
+  theme(axis.text.x=element_text(angle=90, vjust=0.5)) 
+
+
+nopreviousbarplot
+
+
+```
+
+
+
+
+---------------------------------------------------------------------
+
+Let's see what happens with alcohol drivers that are involved in fatal collisions and insurance premiums. 
+
+
+
+```{r}
+
+plot1<-ggplot(data=bad_drivers, mapping = aes(x=alchol_drivers,y=insurance_premiums)) + 
+  geom_point() + geom_smooth(method=lm)+ 
+  labs(title = "Insurance Premiun vs Alcohol Drivers", x = "Drivers under influence of Alcohol", y = "Insurance Premiums") +
+  theme(legend.title = element_blank(), legend.position = "none") + theme_minimal()
+
+plot1
+
+plot2<- plot1 + geom_label_repel(aes(label = state))
+plot2
+
+
+
+```
+
+
+The relationship between alcohol drivers and premium insurance are indirectly proportional. Insurance companies tends to claim your DUI was intentional, and they can refuse to cover you or drivers will face higher insurance premium.
+
+
+
+----------------------------
+
+## Map 
+
+
+Below is the map that shows the U.S states with bad drivers percentage. 
+
+
+```{r}
+library(plotly)
+library(ggrepel)
+library(sf)
+library(usmap)
+
+
+baddrivers_map<- plot_usmap(data = bad_drivers, values = "num_drivers", color = "red") + 
+  scale_fill_continuous(name = "Bad drivers in U.S", label = scales::comma) + 
+  theme(legend.position = "right")
+
+baddrivers_map
+
+
+
+```
+
+
+
+
+------------------------------------
+
+
+
