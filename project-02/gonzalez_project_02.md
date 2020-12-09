@@ -2,6 +2,8 @@
 title: "Data Visualization - Mini-Project 2"
 author: "Heilyn Gonzalez `hramirezabreu8662@floridapoly.edu`"
 output: html_notebook
+editor_options: 
+  chunk_output_type: inline
 ---
 
 I have selected for this project the dataset about bad drivers in U.S. I pretend to visualize which State has the worst drivers in the country and if the number of accidents where drivers who were not distracted is considerable. I am not the best driver but I drive without exceeding the limit of speed, and I am always afraid of crashes because Floridian's drivers are really racing and that scares me a little bit. 
@@ -187,3 +189,6 @@ baddrivers_map
 
 
 
+
+
+------------------------------------
